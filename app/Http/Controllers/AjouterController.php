@@ -45,6 +45,37 @@ class AjouterController extends Controller
             'message' => 'Année scolaire enregistrée avec succès !',
         ]);
     }
+    public function annee_store2(Request $request){
+        // Validation des données
+        $request->validate([
+            'annee_scolaire' => 'required|string|size:9',
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        // Vérifier si l'année scolaire et l'ID utilisateur existent déjà
+        $exists = AnneeAcademique::where('annee_scolaire', $request->annee_scolaire)
+                                  ->where('user_id', $request->user_id)
+                                  ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Cette année scolaire est déjà enregistrée pour cet utilisateur.',
+            ]);
+        }
+
+        // Création d'une nouvelle année académique
+        AnneeAcademique::create([
+            'annee_scolaire' => $request->annee_scolaire,
+            'user_id' => $request->user_id,
+            'is_active' => true
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Année scolaire enregistrée avec succès !',
+        ]);
+    }
 
 
     public function institution(){

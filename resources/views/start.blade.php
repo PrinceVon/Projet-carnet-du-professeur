@@ -3,12 +3,14 @@
 @section('content')
     <div class="card">
         <div class="container mt-5">
-            <h1 class="text-center"><b>Evènement</b></h1>
-            <h2>Titre : {{ $evenement->titre }}</h2>
+            <h1 class="text-center"><b>Cours</b></h1>
+            <h2>Unité d'enseignement : {{ $evenement->titre }}</h2>
             <h2>Date : {{ $evenement->date }}</h2>
             <h2>Heure de début : {{ $evenement->heure_debut }}</h2>
             <h2>Heure de fin : {{ $evenement->heure_fin }}</h2>
             <h2>Institution : {{ $evenement->institution }}</h2>
+            <h2>Salle : {{ $evenement->salle }}</h2>
+            <h2>Filière : {{ $evenement->filiere }}</h2>
             <div class="text-center mt-3">
                 <button class="btn btn-primary" id='faire-appel'>Faire l'appel</button>
                 <a href="{{ route('presence.pdf', ['evenementId' => $evenement->id]) }}" class="btn btn-primary">
@@ -25,11 +27,14 @@
                     <div class="form-group">
                         <label for="note-plus">Note (Plus) :</label>
                         <textarea id="note-plus" name="note_plus" class="form-control" rows="3"></textarea>
+                        <input type="text" id="note-plus-hidden" style="position: absolute; left: -9999px;" />
                     </div>
                     <div class="form-group">
                         <label for="note-moins">Note (Moins) :</label>
                         <textarea id="note-moins" name="note_moins" class="form-control" rows="3"></textarea>
+                        <input type="text" id="note-moins-hidden" style="position: absolute; left: -9999px;" />
                     </div>
+
                     <div class="form-group">
                         <label for="note-devoir-maison">Note (Devoir Maison) :</label>
                         <textarea id="note-devoir-maison" name="note_devoir_maison" class="form-control" rows="3"></textarea>
@@ -76,38 +81,64 @@
 @endsection
 
 @push('start')
-    <script>
-        $(document).ready(function() {
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+<script>
+    $(document).ready(function() {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        initializeAutocomplete();
+        // Fonction pour convertir le texte du commentaire en liste
+        function convertToList() {
+            const textarea = document.getElementById('commentaire');
+            const list = document.getElementById('commentaireListe');
+
+            const lines = textarea.value.split('\n');
+
+            list.innerHTML = '';
+
+            lines.forEach(line => {
+                if (line.trim()) { // Ignore empty lines
+                    const listItem = document.createElement('li');
+                    listItem.textContent = line.trim();
+                    list.appendChild(listItem);
                 }
             });
+        }
 
-            function convertToList() {
-                const textarea = document.getElementById('commentaire');
-                const list = document.getElementById('commentaireListe');
+        // Fonction pour récupérer les étudiants et initialiser l'autocomplétion
+        function initializeAutocomplete() {
+            var eventId = "{{ $evenement->id }}";
 
-                // Split the textarea value by newline characters
-                const lines = textarea.value.split('\n');
+            $.ajax({
+                url: '/get-students/' + eventId,
+                method: 'GET',
+                success: function(response) {
+                var students = response.students.map(student => ({
+                        label: student.nom + ' ' + student.prenom,
+                        value: student.nom + ' ' + student.prenom
+                    }));
+                    // Initialiser l'autocomplétion pour les champs note-plus et note-moins
+                    $('#note-plus').autocomplete({
+                        source: students
+                    });
 
-                // Clear the current list
-                list.innerHTML = '';
-
-                // Loop through each line and add it as a list item
-                lines.forEach(line => {
-                    if (line.trim()) { // Ignore empty lines
-                        const listItem = document.createElement('li');
-                        listItem.textContent = line.trim();
-                        list.appendChild(listItem);
-                    }
-                });
-            }
+                    $('#note-moins').autocomplete({
+                        source: students
+                    });
+                },
+                error: function(xhr) {
+                    alert('Une erreur est survenue : ' + xhr.responseText);
+                    console.log(xhr.responseText);
+                }
+            });
+        }
 
 
-            $('#terminer').on('click', function() {
-
-                Swal.fire({
+        $('#terminer').on('click', function() {
+            Swal.fire({
                 icon: 'question',
                 title: 'Question',
                 text: 'Avez-vous vraiment fini ?',
@@ -120,22 +151,11 @@
                     var now = new Date(); // Obtenez l'heure actuelle
                     var heureDepart = new Date().toLocaleTimeString('fr-FR', { hour12: false });
 
-
-                    // Récupérez l'heure d'arrivée de l'événement depuis la base de données
                     var heureArrivee = "{{ $evenement->heure_arrivee }}"; // Assurez-vous que cette valeur est correctement formatée
-
-                    // Calculez la durée entre heureArrivee et heureDepart
-                    // var arrivee = new Date(heureArrivee);
-                    // var depart = new Date(heureDepart);
-                    // var duree = depart.diff(arrivee);
-
                     var format = 'HH:mm:ss'; // Le format attendu pour les heures (24 heures)
                     var arrivee = moment(heureArrivee, format); // Utilisation de Moment.js pour le parsing
                     var depart = moment(heureDepart, format); // Utilisation de Moment.js pour le parsing
-
-                    // Calculer la différence en millisecondes
-                    var duree = depart.diff(arrivee)/(1000 * 60 * 60);
-
+                    var duree = depart.diff(arrivee) / (1000 * 60 * 60);
 
                     $.ajax({
                         url: '/terminer/' + eventId,
@@ -152,92 +172,89 @@
                                 confirmButtonText: 'OK'
                             });
                             window.location.href = '/dashboard-du-prof'; // Rediriger vers l'agenda
-
                         },
                         error: function(xhr) {
                             alert('Une erreur est survenue : ' + xhr.responseText);
                             console.log(xhr.responseText);
-
-
                         }
                     });
                 }
             });
+        });
 
-            });
+        $('#faire-appel').on('click', function() {
+            var eventId = "{{ $evenement->id }}";
 
-            $('#faire-appel').on('click', function() {
-                var eventId = "{{ $evenement->id }}";
+            $.ajax({
+                url: '/get-students/' + eventId,
+                method: 'GET',
+                success: function(response) {
+                    var studentsList = $('#students-list');
+                    studentsList.empty();
 
-                $.ajax({
-                    url: '/get-students/' + eventId,
-                    method: 'GET',
-                    success: function(response) {
-                        var studentsList = $('#students-list');
-                        studentsList.empty();
+                    response.students.forEach(function(student) {
+                        studentsList.append(
+                            '<div class="form-group">' +
+                            '<div class="form-check">' +
+                            '<input class="form-check-input" type="radio" name="status_' + student.id + '" id="present_' + student.id + '" value="Présent(e)">' +
+                            '<label class="form-check-label" for="present_' + student.id + '">' +
+                            '<strong>' + student.nom + ' ' + student.prenom + '</strong>' +
+                            ' - Présent' +
+                            '</label>' +
+                            '</div>' +
+                            '<div class="form-check">' +
+                            '<input class="form-check-input" type="radio" name="status_' + student.id + '" id="absent_' + student.id + '" value="Absent(e)">' +
+                            '<label class="form-check-label" for="absent_' + student.id + '">' +
+                            '<strong>' + student.nom + ' ' + student.prenom + '</strong>' +
+                            ' - Absent' +
+                            '</label>' +
+                            '</div>' +
+                            '</div>'
+                        );
+                    });
 
-                        response.students.forEach(function(student) {
-                            studentsList.append(
-                                '<div class="form-group">' +
-                                '<div class="form-check">' +
-                                '<input class="form-check-input" type="radio" name="status_' + student.id + '" id="present_' + student.id + '" value="Présent(e)">' +
-                                '<label class="form-check-label" for="present_' + student.id + '">' +
-                                '<strong>' + student.nom + ' ' + student.prenom + '</strong>' +
-                                ' - Présent' +
-                                '</label>' +
-                                '</div>' +
-                                '<div class="form-check">' +
-                                '<input class="form-check-input" type="radio" name="status_' + student.id + '" id="absent_' + student.id + '" value="Absent(e)">' +
-                                '<label class="form-check-label" for="absent_' + student.id + '">' +
-                                '<strong>' + student.nom + ' ' + student.prenom + '</strong>' +
-                                ' - Absent' +
-                                '</label>' +
-                                '</div>' +
-                                '</div>'
-                            );
-                        });
-
-                        $('#appelModal').modal('show');
-                    },
-                    error: function(xhr) {
-                        alert('Une erreur est survenue : ' + xhr.responseText);
-                        console.log(xhr.responseText);
-                    }
-                });
-            });
-
-            $('#enregistrer-appel').on('click', function() {
-                var eventId = "{{ $evenement->id }}";
-                var statuses = {};
-
-                $('input[type=radio]:checked').each(function() {
-                    var studentId = $(this).attr('id').split('_')[1];
-                    var status = $(this).val();
-                    statuses[studentId] = status;
-                });
-
-                $.ajax({
-                    url: '/save-attendance/' + eventId,
-                    method: 'POST',
-                    data: {
-                        statuses: statuses
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Succès !',
-                            text: 'Votre enregistrement a été réalisé avec succès.',
-                            confirmButtonText: 'OK'
-                        });
-                        console.log(response);
-                        $('#appelModal').modal('hide');
-                    },
-                    error: function(xhr) {
-                        alert('Une erreur est survenue : ' + xhr.responseText);
-                        console.log(xhr.responseText);
-                    }
-                });
+                    $('#appelModal').modal('show');
+                },
+                error: function(xhr) {
+                    alert('Une erreur est survenue : ' + xhr.responseText);
+                    console.log(xhr.responseText);
+                }
             });
         });
-    </script>
+
+        $('#enregistrer-appel').on('click', function() {
+            var eventId = "{{ $evenement->id }}";
+            var statuses = {};
+
+            $('input[type=radio]:checked').each(function() {
+                var studentId = $(this).attr('id').split('_')[1];
+                var status = $(this).val();
+                statuses[studentId] = status;
+            });
+
+            $.ajax({
+                url: '/save-attendance/' + eventId,
+                method: 'POST',
+                data: {
+                    statuses: statuses
+                },
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Succès !',
+                        text: 'Votre enregistrement a été réalisé avec succès.',
+                        confirmButtonText: 'OK'
+                    });
+                    console.log(response);
+                    $('#appelModal').modal('hide');
+                },
+                error: function(xhr) {
+                    alert('Une erreur est survenue : ' + xhr.responseText);
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
 @endpush
+

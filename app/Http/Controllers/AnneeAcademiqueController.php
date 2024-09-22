@@ -13,8 +13,7 @@ class AnneeAcademiqueController extends Controller
         $selectedAnneeId = $request->annee_scolaire;
 
         // Désactiver toutes les années
-        AnneeAcademique::query()->update(['is_active' => false]);
-
+        anneeacademique::where('user_id', auth()->user()->id)->update(['is_active' => false]);
         // Activer l'année sélectionnée
 
 

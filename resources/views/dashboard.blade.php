@@ -101,7 +101,33 @@
                             @foreach($notifications as $notification)
                             <div class="alert alert-info" style="color: black;">
                                 <p><b><u>Message:</u></b> {{ $notification->message }}</p>
-                                <small><b>Envoi prévu pour le </b>: {{ $notification->send_at }} pour <b>l'utilisateur :</b> <u>{{ $notification->user->name }}</u></small>
+                                <small><b>Envoi prévu pour le </b>: {{ $notification->send_at }} pour <b>l'utilisateur :</b> <u>{{ $notification->user->name }}</u> dont l'Email est <b>{{ $notification->user->email }}</b></small>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header pb-0">
+                            <h6>Messages reçus</h6>
+                        </div>
+                        <div class="card-body p-3">
+                            @foreach($messages as $message)
+                            <div class="alert alert-warning d-flex flex-row justify-content-between" style="color: black;">
+                                <div><p><b><u>Message:</u></b> {{ $message->message }}</p></div>
+
+                                <small>Envoyé par l'utilisateur : <b>{{ $message->user->name }}</b>  dont l'Email est <b>{{ $message->user->email }}</b></small>
+                                <div>
+                                    <form id="delete-{{ $message->id }}" action="{{ route('message.destroy', $message) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-danger btn-sm mb-0" type="button" onclick="confirmDelete({{ $message->id }})">
+                                            Supprimer
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                             @endforeach
                         </div>
@@ -207,6 +233,25 @@
             console.error('Élément avec l\'ID "institution-chart" non trouvé.');
         }
     });
+
+
+    function confirmDelete(messageId) {
+        Swal.fire({
+            title: 'Êtes-vous sûr ?',
+            text: "Cette action est irréversible !",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Oui, supprimer !',
+            cancelButtonText: 'Annuler'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('delete-' + messageId).submit();
+            }
+        });
+    }
+
 </script>
 @endpush
 

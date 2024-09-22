@@ -85,6 +85,15 @@
 
 
       @if(Auth::user()->role === 'professeur')
+
+      <li class="nav-item">
+        <a class="nav-link {{ (Request::is('configuration-globale') ? 'active' : '') }}" href="{{ url('/configuration-globale') }}">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="fas fa-calendar" style="color: #282e77;"></i>
+          </div>
+          <span class="nav-link-text ms-1">Configuration globale</span>
+        </a>
+      </li>
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('salary-report') ? 'active' : '') }}" href="{{ url('salary-report') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -129,75 +138,120 @@
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('evenements-planifies') ? 'active' : '') }}" href="{{ url('/evenements-planifies') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <svg width="12px" height="12px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-              <title>Evènements</title>
-              <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                <g transform="translate(-2020.000000, -442.000000)" fill="#FFFFFF" fill-rule="nonzero">
-                  <g transform="translate(1716.000000, 291.000000)">
-                    <g transform="translate(304.000000, 151.000000)">
-                      <polygon class="color-background opacity-6" points="18.0883333 15.7316667 11.1783333 8.82166667 13.3333333 6.66666667 6.66666667 0 0 6.66666667 6.66666667 13.3333333 8.82166667 11.1783333 15.315 17.6716667"></polygon>
-                      <path class="color-background opacity-6" d="M31.5666667,23.2333333 C31.0516667,23.2933333 30.53,23.3333333 30,23.3333333 C29.4916667,23.3333333 28.9866667,23.3033333 28.48,23.245 L22.4116667,30.7433333 L29.9416667,38.2733333 C32.2433333,40.575 35.9733333,40.575 38.275,38.2733333 L38.275,38.2733333 C40.5766667,35.9716667 40.5766667,32.2416667 38.275,29.94 L31.5666667,23.2333333 Z"></path>
-                      <path class="color-background" d="M33.785,11.285 L28.715,6.215 L34.0616667,0.868333333 C32.82,0.315 31.4483333,0 30,0 C24.4766667,0 20,4.47666667 20,10 C20,10.99 20.1483333,11.9433333 20.4166667,12.8466667 L2.435,27.3966667 C0.95,28.7083333 0.0633333333,30.595 0.00333333333,32.5733333 C-0.0583333333,34.5533333 0.71,36.4916667 2.11,37.89 C3.47,39.2516667 5.27833333,40 7.20166667,40 C9.26666667,40 11.2366667,39.1133333 12.6033333,37.565 L27.1533333,19.5833333 C28.0566667,19.8516667 29.01,20 30,20 C35.5233333,20 40,15.5233333 40,10 C40,8.55166667 39.685,7.18 39.1316667,5.93666667 L33.785,11.285 Z"></path>
-                    </g>
-                  </g>
-                </g>
-              </g>
-            </svg>
+            <i class="fas fa-bell" style="color: #282e77;"></i> <!-- Icône de cloche -->
           </div>
           <span class="nav-link-text ms-1">Evènements planifiés</span>
         </a>
       </li>
 
+      {{-- <li class="nav-item">
 
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle {{ (Request::is('ajouter*') ? 'active' : '') }}" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <a class="nav-link {{ (Request::is('recherche') ? 'active' : '') }}" href="{{ url('/recherche') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <!-- SVG icon here -->
-            <svg width="12px" height="12px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-              <title>Ajout</title>
-              <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                <g transform="translate(-2020.000000, -442.000000)" fill="#FFFFFF" fill-rule="nonzero">
-                  <g transform="translate(1716.000000, 291.000000)">
-                    <g transform="translate(304.000000, 151.000000)">
-                      <polygon class="color-background opacity-6" points="18.0883333 15.7316667 11.1783333 8.82166667 13.3333333 6.66666667 6.66666667 0 0 6.66666667 6.66666667 13.3333333 8.82166667 11.1783333 15.315 17.6716667"></polygon>
-                      <path class="color-background opacity-6" d="M31.5666667,23.2333333 C31.0516667,23.2933333 30.53,23.3333333 30,23.3333333 C29.4916667,23.3333333 28.9866667,23.3033333 28.48,23.245 L22.4116667,30.7433333 L29.9416667,38.2733333 C32.2433333,40.575 35.9733333,40.575 38.275,38.2733333 L38.275,38.2733333 C40.5766667,35.9716667 40.5766667,32.2416667 38.275,29.94 L31.5666667,23.2333333 Z"></path>
-                      <path class="color-background" d="M33.785,11.285 L28.715,6.215 L34.0616667,0.868333333 C32.82,0.315 31.4483333,0 30,0 C24.4766667,0 20,4.47666667 20,10 C20,10.99 20.1483333,11.9433333 20.4166667,12.8466667 L2.435,27.3966667 C0.95,28.7083333 0.0633333333,30.595 0.00333333333,32.5733333 C-0.0583333333,34.5533333 0.71,36.4916667 2.11,37.89 C3.47,39.2516667 5.27833333,40 7.20166667,40 C9.26666667,40 11.2366667,39.1133333 12.6033333,37.565 L27.1533333,19.5833333 C28.0566667,19.8516667 29.01,20 30,20 C35.5233333,20 40,15.5233333 40,10 C40,8.55166667 39.685,7.18 39.1316667,5.93666667 L33.785,11.285 Z"></path>
-                    </g>
-                  </g>
-                </g>
-              </g>
-            </svg>
+            <i class="fas fa-search" style="color: #282e77;"></i>
           </div>
-          <span class="nav-link-text ms-1">Ajouter...</span>
+          <span class="nav-link-text ms-1">Recherche de devoirs de maison</span>
         </a>
-        <ul class="dropdown-menu" aria-labelledby="navbarDropdown" data-bs-auto-close="true">
-          <li><a class="dropdown-item" href="{{ url('/ajouter/annee-scolaire') }}" style="color : black;">Année scolaire</a></li>
-          <li><a class="dropdown-item" href="{{ url('/ajouter/institution') }}" style="color : black;">Institutions</a></li>
-          <li><a class="dropdown-item" href="{{ url('/ajouter/unite-enseignement') }}" style="color : black;">Unités d'enseignement</a></li>
-          <li><a class="dropdown-item" href="{{ url('/ajouter/filiere') }}" style="color : black;">Filières</a></li>
-          <li><a class="dropdown-item" href="{{ url('/ajouter/salle') }}" style="color : black;">Salles</a></li>
+
+      </li> --}}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle {{ Request::is('ajouter*') ? 'active' : '' }}" id="navbarDropdown" role="button" data-bs-toggle="dropdown" >
+            <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                <!-- SVG icon here -->
+                <svg width="12px" height="12px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <title>Ajout</title>
+                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <g transform="translate(-2020.000000, -442.000000)" fill="#FFFFFF" fill-rule="nonzero">
+                            <g transform="translate(1716.000000, 291.000000)">
+                                <g transform="translate(304.000000, 151.000000)">
+                                    <polygon class="color-background opacity-6" points="18.0883333 15.7316667 11.1783333 8.82166667 13.3333333 6.66666667 6.66666667 0 0 6.66666667 6.66666667 13.3333333 8.82166667 11.1783333 15.315 17.6716667"></polygon>
+                                    <path class="color-background opacity-6" d="M31.5666667,23.2333333 C31.0516667,23.2933333 30.53,23.3333333 30,23.3333333 C29.4916667,23.3333333 28.9866667,23.3033333 28.48,23.245 L22.4116667,30.7433333 L29.9416667,38.2733333 C32.2433333,40.575 35.9733333,40.575 38.275,38.2733333 L38.275,38.2733333 C40.5766667,35.9716667 40.5766667,32.2416667 38.275,29.94 L31.5666667,23.2333333 Z"></path>
+                                    <path class="color-background" d="M33.785,11.285 L28.715,6.215 L34.0616667,0.868333333 C32.82,0.315 31.4483333,0 30,0 C24.4766667,0 20,4.47666667 20,10 C20,10.99 20.1483333,11.9433333 20.4166667,12.8466667 L2.435,27.3966667 C0.95,28.7083333 0.0633333333,30.595 0.00333333333,32.5733333 C-0.0583333333,34.5533333 0.71,36.4916667 2.11,37.89 C3.47,39.2516667 5.27833333,40 7.20166667,40 C9.26666667,40 11.2366667,39.1133333 12.6033333,37.565 L27.1533333,19.5833333 C28.0566667,19.8516667 29.01,20 30,20 C35.5233333,20 40,15.5233333 40,10 C40,8.55166667 39.685,7.18 39.1316667,5.93666667 L33.785,11.285 Z"></path>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </svg>
+            </div>
+            <span class="nav-link-text ms-1">Ajouter...</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end px-2 py-3 me-sm-n4" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{{ url('/ajouter/annee-scolaire') }}" style="color: black;">Année scolaire</a></li>
+            <li><a class="dropdown-item" href="{{ url('/ajouter/institution') }}" style="color: black;">Institutions</a></li>
+            <li><a class="dropdown-item" href="{{ url('/ajouter/unite-enseignement') }}" style="color: black;">Unités d'enseignement</a></li>
+            <li><a class="dropdown-item" href="{{ url('/ajouter/filiere') }}" style="color: black;">Filières</a></li>
+            <li><a class="dropdown-item" href="{{ url('/ajouter/salle') }}" style="color: black;">Salles</a></li>
         </ul>
-      </li>
-      
+    </li>
+
+
+
+
+
+
       @endif
 
 
 
     </ul>
   </div>
-  {{-- <div class="sidenav-footer mx-3 ">
-    <div class="card card-background shadow-none card-background-mask-secondary" id="sidenavCard">
-      <div class="full-background" style="background-image: url('../assets/img/curved-images/curved0.jpg')"></div>
-      <div class="card-body text-start p-3 w-100">
-        <div class="icon icon-shape icon-sm bg-white shadow text-center mb-3 d-flex align-items-center justify-content-center border-radius-md">
-          <i class="ni ni-diamond text-dark text-gradient text-lg top-0" aria-hidden="true" id="sidenavCardIcon"></i>
+    @if(Auth::user()->role === 'professeur')
+
+    <div class="sidenav-footer mx-3 ">
+        <div class="card card-background shadow-none card-background-mask-secondary" id="sidenavCard">
+            <div class="full-background" style="background-image: url('../assets/img/curved-images/curved0.jpg')"></div>
+            <div class="card-body text-start p-3 w-100">
+                <div class="docs-info">
+                    <h6 class="text-white up mb-0">Un truc à nous dire?...</h6>
+                    <form id="messageForm">
+                        @csrf
+                        <div class="form-group mb-3">
+                            <label for="message" class="text-white">Votre message</label>
+                            <textarea id="message" name="message" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-white btn-sm w-100 mb-0">Envoyer</button>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="docs-info">
-          <h6 class="text-white up mb-0">Besoin d'aide ?</h6>
-          <p class="text-xs font-weight-bold">Veuillez vous référez à notre documentation</p>
-          <a href="/documentation/getting-started/overview.html" target="_blank" class="btn btn-white btn-sm w-100 mb-0">Documentation</a>
-        </div>
-      </div>
     </div>
-  </div> --}}
+    @endif
+
 </aside>
+@push('ok')
+<script>
+    document.getElementById('messageForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Empêche le formulaire de se soumettre normalement
+
+        var formData = new FormData(this);
+
+        fetch('/messages', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': formData.get('_token'),
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Succès!',
+                    text: data.success,
+                    confirmButtonText: 'OK'
+                });
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur!',
+                text: 'Une erreur est survenue. Veuillez réessayer.',
+                confirmButtonText: 'OK'
+            });
+        });
+    });
+    </script>
+@endpush

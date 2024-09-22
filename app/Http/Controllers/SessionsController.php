@@ -3,15 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Message;
 use App\Models\Etudiant;
 use App\Models\Presence;
 use App\Models\Evenement;
 use App\Models\Institution;
 use App\Models\Notification;
-use App\Jobs\UpdateColorsJob;
-use App\Http\Controllers\Controller;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use App\Jobs\UpdateColorsJob;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -44,6 +45,9 @@ class SessionsController extends Controller
         // Notifications
         $notifications = Notification::with('user')->get();
 
+        //Messages
+        $messages = Message::with('user')->get();
+
         // Graphiques
         $professorStats = [
             'Active' => $activeProfessors,
@@ -70,7 +74,7 @@ class SessionsController extends Controller
             'totalCourses', 'completedCourses', 'pendingCourses', 'missedCourses',
             'totalStudents', 'presentStudents', 'absentStudents',
             'totalInstitutions', 'activeInstitutions',
-            'notifications', 'professorStats', 'courseStats', 'attendanceStats', 'institutionStats'
+            'notifications', 'professorStats', 'courseStats', 'attendanceStats', 'institutionStats', 'messages'
         ));
     }
 

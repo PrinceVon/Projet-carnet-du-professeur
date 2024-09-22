@@ -91,13 +91,15 @@
                                                         Supprimer
                                                     </button>
                                                 </form>
-                                                <form action="{{ route('info.user', $user->id) }}" method="POST">
+                                                {{-- Consultation des présences par l'admin --}}
+
+                                                {{-- <form action="{{ route('info.user', $user->id) }}" method="POST">
                                                     @csrf
                                                     @method('GET')
                                                     <button class="btn bg-gradient-primary btn-sm mb-0"  type="submit">
                                                         Consulter
                                                     </button>
-                                                </form>
+                                                </form> --}}
 
 
                                             </td>

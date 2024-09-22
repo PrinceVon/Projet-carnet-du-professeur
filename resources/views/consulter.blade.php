@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="card">
-        <h1><center>Cours nommé : <b>{{ $event->titre }}</b> fait à l'institution : <b>{{ $event->institution }}</b> le <b>{{ $event->date }}</b></center></h1>
+        <h1><center>Cours nommé : <b>{{ $event->titre }}</b> fait à l'institution : <b>{{ $event->institution }}</b> en filière : {{ $event->filiere}} dans la salle {{ $event->salle }} le <b>{{ $event->date }}</b></center></h1>
         <br/>
         <br/>
 

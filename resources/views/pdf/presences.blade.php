@@ -20,7 +20,7 @@
     </style>
 </head>
 <body>
-    <h1><center>Présence pour l'événement : {{ $evenement->titre }} du {{ $evenement->date }} à l' institution : {{ $evenement->institution }}</center></h1>
+    <h1><center><b><u>Présence pour le cours</u></b> : {{ $evenement->titre }} du {{ $evenement->date }} à l' institution : {{ $evenement->institution }} dans la salle : {{ $evenement->salle }}. Filière : {{ $evenement->filiere }}</center></h1>
     <table>
         <thead>
             <tr>

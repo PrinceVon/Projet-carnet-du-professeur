@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class AnneeAcademique extends Model
 {
     use HasFactory;
-    protected $fillable = ['annee_scolaire', 'user_id'];
+    protected $fillable = ['annee_scolaire', 'user_id', 'is_active'];
     protected $table = 'annee_academiques';
 
 }

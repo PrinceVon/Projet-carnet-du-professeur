@@ -10,13 +10,16 @@ use App\Models\Filiere;
 use App\Models\Etudiant;
 use App\Models\Presence;
 use App\Models\Evenement;
+use App\Models\Universite;
 use App\Jobs\NotifJobModif;
 use App\Models\Commentaire;
 use App\Models\Institution;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Jobs\UpdateColorsJob;
+use App\Models\AnneeAcademique;
 use App\Models\UniteEnseignement;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -186,19 +189,14 @@ class EvenementController extends Controller
             'rappel' => $request->rappel,
         ]);
 
-        // Gérer le fichier si fourni
-            $event->fichier = Salle::where('id',$request->salle_id)->get()->first()->liste;
 
-            if ($event->fichier) {
-                Storage::disk('public')->delete($event->fichier);
-            }
-            // Supprimer les anciens étudiants
+
             Presence::where('evenement_id', $id)->delete();
 
             // Enregistrer le nouveau fichier
             $file = Salle::where('id',$request->salle_id)->get()->first()->liste;
             $extension = pathinfo($file, PATHINFO_EXTENSION);
-            $path = Salle::where('id',$request->salle_id)->get()->first()->liste;;
+            $path = Salle::where('id',$request->salle_id)->get()->first()->liste;
             $event->fichier = $path;
 
             if ($extension === 'xml') {
@@ -241,13 +239,14 @@ class EvenementController extends Controller
                         $data[] = $cell->getValue();
                     }
 
-                    if (count($data) >= 3) {
-                        $nom = $data[0];
-                        $prenom = $data[1];
-                        $sexe = $data[2];
+                    if (count($data) >= 4) {
+                        $matricule = $data[0];
+                        $nom = $data[1];
+                        $prenom = $data[2];
+                        $sexe = $data[3];
 
                         $etudiantRecord = Etudiant::updateOrCreate(
-                            ['nom' => $nom, 'prenom' => $prenom],
+                            ['matricule' => $matricule, 'nom' => $nom, 'prenom' => $prenom],
                             ['sexe' => $sexe]
                         );
 
@@ -389,6 +388,12 @@ class EvenementController extends Controller
         return response()->json(['students' => $students]);
     }
 
+    public function getUniversite()
+    {
+        $universites = Universite::all();
+        return response()->json(['universites' => $universites]);
+    }
+
     public function saveAttendance(Request $request, $eventId)
     {
         $statuses = $request->input('statuses');
@@ -428,4 +433,207 @@ class EvenementController extends Controller
             'evenement_semaine' => $evenement_semaine,
         ]);
     }
+
+    function jourAnglaisVersFrancais($jourAnglais)
+    {
+        $joursFrancais = [
+            'Monday'    => 'lundi',
+            'Tuesday'   => 'mardi',
+            'Wednesday' => 'mercredi',
+            'Thursday'  => 'jeudi',
+            'Friday'    => 'vendredi',
+            'Saturday'  => 'samedi',
+            'Sunday'    => 'dimanche'
+        ];
+
+        return $joursFrancais[$jourAnglais] ?? $jourAnglais;
+    }
+
+
+
+
+    public function creation()
+    {
+        $userId = auth()->user()->id;
+        $anneeActive = AnneeAcademique::where('user_id', $userId)->where('is_active', true)->first();
+        $activeId = $anneeActive ? $anneeActive->id : null;
+
+        $uniteEnseignements = UniteEnseignement::where('user_id', $userId)
+            ->where('annee_id', $activeId)
+            ->get();
+
+        $institutions = Institution::where('user_id', $userId)
+            ->where('annee_id', $activeId)
+            ->get();
+
+        $salles = Salle::where('user_id', $userId)
+            ->where('annee_id', $activeId)
+            ->get();
+
+        $filieres = Filiere::where('user_id', $userId)
+            ->where('annee_id', $activeId)
+            ->get();
+
+        return view('evenements.create', compact('uniteEnseignements', 'institutions', 'salles', 'filieres', 'activeId'));
+    }
+
+    public function storage(Request $request)
+    {
+        $request->validate([
+            'titre' => 'required|string',
+            'date_debut' => 'required|date',
+            'date_fin' => 'required|date',
+            'jours' => 'required|array',
+            'heure_debut' => 'required|date_format:H:i',
+            'heure_fin' => 'required|date_format:H:i',
+            'institution' => 'required|integer',
+            'salle' => 'required|integer',
+            'rappel' => 'required|integer',
+            'color' => 'string',
+            'filiere' => 'required|string',
+            'user_id' => 'required|exists:users,id',
+            'annee_id' => 'required|exists:annee_academiques,id'
+        ]);
+
+        $jours = $request->input('jours');
+        $dateDebut = new \DateTime($request->input('date_debut'));
+        $dateFin = new \DateTime($request->input('date_fin'));
+        $heureDebut = $request->input('heure_debut');
+        $heureFin = $request->input('heure_fin');
+        $institutionId = $request->input('institution');
+        $salleId = $request->input('salle');
+
+        // Récupération du fichier à partir de la salle
+        $salle = Salle::find($salleId);
+        $fichier = $salle ? $salle->liste : '';
+
+        function jourAnglaisVersFrancais($jourAnglais)
+        {
+            $joursFrancais = [
+                'Monday'    => 'lundi',
+                'Tuesday'   => 'mardi',
+                'Wednesday' => 'mercredi',
+                'Thursday'  => 'jeudi',
+                'Friday'    => 'vendredi',
+                'Saturday'  => 'samedi',
+                'Sunday'    => 'dimanche'
+            ];
+
+            return $joursFrancais[$jourAnglais] ?? $jourAnglais;
+        }
+
+        $eventIds = []; // Tableau pour stocker les ID des événements
+
+        while ($dateDebut <= $dateFin) {
+            $jourEnFrancais = jourAnglaisVersFrancais($dateDebut->format('l'));
+
+            if (in_array($jourEnFrancais, $jours)) {
+                $eventId = \DB::table('evenements')->insertGetId([
+                    'titre' => $request->input('titre'),
+                    'date' => $dateDebut->format('Y-m-d'),
+                    'heure_debut' => $heureDebut,
+                    'heure_fin' => $heureFin,
+                    'institution' => Institution::find($institutionId)->nom,
+                    'salle' => Salle::find($salleId)->nom,
+                    'rappel' => $request->input('rappel'),
+                    'color' => $request->input('color'),
+                    'fichier' => $fichier,
+                    'filiere' => $request->input('filiere'),
+                    'user_id' => $request->input('user_id'),
+                    'institution_id' => $institutionId,
+                    'annee_id' => $request->input('annee_id'),
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+
+                $eventIds[] = $eventId; // Stocker l'ID de l'événement
+
+                // Dispatch job de notification
+                NotifJob::dispatch();
+
+                // Traiter le fichier associé à la salle
+                $filePath = $salle->liste;
+
+                if (!$filePath) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Aucun fichier associé à la salle.',
+                    ], 404);
+                }
+
+                // Déterminer l'extension du fichier
+                $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+
+                if ($extension === 'xml') {
+                    // Traiter le fichier XML
+                    $xmlContent = Storage::disk('public')->get($filePath);
+                    $xml = simplexml_load_string($xmlContent);
+
+                    if ($xml === false || !isset($xml->etudiant)) {
+                        return response()->json(['error' => 'Structure du fichier XML invalide.'], 400);
+                    }
+
+                    foreach ($xml->etudiant as $etudiant) {
+                        $matricule = (string) $etudiant->matricule;
+                        $nom = (string) $etudiant->nom;
+                        $prenom = (string) $etudiant->prenom;
+                        $sexe = (string) $etudiant->sexe;
+
+                        $etudiantRecord = Etudiant::updateOrCreate(
+                            ['matricule' => $matricule],
+                            ['nom' => $nom, 'prenom' => $prenom, 'sexe' => $sexe]
+                        );
+
+                        foreach ($eventIds as $eventId) {
+                            Presence::updateOrCreate(
+                                ['etudiant_id' => $etudiantRecord->id, 'evenement_id' => $eventId]
+                            );
+                        }
+                    }
+                } elseif ($extension === 'xlsx') {
+                    // Traiter le fichier XLSX
+                    $spreadsheet = IOFactory::load(storage_path('app/public/' . $filePath));
+                    $worksheet = $spreadsheet->getActiveSheet();
+
+                    // Sauter la première ligne (en-têtes)
+                    $rowIterator = $worksheet->getRowIterator(2);
+                    foreach ($rowIterator as $row) {
+                        $cellIterator = $row->getCellIterator();
+                        $cellIterator->setIterateOnlyExistingCells(false);
+
+                        $data = [];
+                        foreach ($cellIterator as $cell) {
+                            $data[] = $cell->getValue();
+                        }
+
+                        if (count($data) >= 4) {
+                            $matricule = $data[0];
+                            $nom = $data[1];
+                            $prenom = $data[2];
+                            $sexe = $data[3];
+
+                            $etudiantRecord = Etudiant::updateOrCreate(
+                                ['matricule' => $matricule],
+                                ['nom' => $nom, 'prenom' => $prenom, 'sexe' => $sexe],
+                            );
+
+                            foreach ($eventIds as $eventId) {
+                                Presence::updateOrCreate(
+                                    ['etudiant_id' => $etudiantRecord->id, 'evenement_id' => $eventId]
+                                );
+                            }
+                        }
+                    }
+
+                } else {
+                    return response()->json(['error' => 'Type de fichier non pris en charge.'], 400);
+                }
+            }
+
+            $dateDebut->modify('+1 day');
+        }
+
+        return redirect()->route('evenements.creation')->with('success', 'Action effectuée avec succès.');
+    }
+
 }

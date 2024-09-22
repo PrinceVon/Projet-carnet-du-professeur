@@ -43,12 +43,12 @@ class NotifJobModif implements ShouldQueue
 
         // Déterminer le message selon la valeur de $evenement->rappel
         if ($evenement->rappel == 10 || $evenement->rappel == 30) {
-            $message = "Vous avez un cours nommé \"{$evenement->titre}\" dans l'institution {$evenement->institution} à {$evenement->heure_debut}, dans {$evenement->rappel} minutes.";
+            $message = "Vous avez un cours nommé \"{$evenement->titre}\" dans l'institution {$evenement->institution} à {$evenement->heure_debut}, dans {$evenement->rappel} minutes. Filière :  $evenement->filiere .";
         } elseif ($evenement->rappel == 60 || $evenement->rappel == 300) {
-            $message = "Vous avez un cours nommé \"{$evenement->titre}\" dans l'institution {$evenement->institution} à {$evenement->heure_debut}, dans ".($evenement->rappel / 60).' heure(s).';
+            $message = "Vous avez un cours nommé \"{$evenement->titre}\" dans l'institution {$evenement->institution} à {$evenement->heure_debut}, dans ".($evenement->rappel / 60).' heure(s). Filière :  $evenement->filiere .';
         } else {
             // Valeur par défaut ou autre cas
-            $message = "Vous avez un cours nommé \"{$evenement->titre}\" dans l'institution {$evenement->institution} à {$evenement->heure_debut}, dans {$evenement->rappel} minutes.";
+            $message = "Vous avez un cours nommé \"{$evenement->titre}\" dans l'institution {$evenement->institution} à {$evenement->heure_debut}, dans {$evenement->rappel} minutes. Filière :  $evenement->filiere .";
         }
 
         // Créer la notification avec le message déterminé

@@ -9,11 +9,13 @@ use Illuminate\Support\Facades\Password;
 use App\Http\Controllers\NotesController;
 use App\Http\Controllers\ResetController;
 use App\Http\Controllers\AjouterController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\InfoUserController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\SessionsController;
 use App\Http\Controllers\ConsulterController;
 use App\Http\Controllers\EvenementController;
+use App\Http\Controllers\RechercheController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\PresencePDFController;
 use App\Http\Controllers\SalaryReportController;
@@ -38,9 +40,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('dashboard', [SessionsController::class, 'index'])->name('dashboard');
     route::post('/update-annee-academique', [AnneeAcademiqueController::class, 'update'])->name('update.annee_academique');
     Route::get('dashboard-du-prof', [ProfController::class, 'index'])->name('dashboard-du-prof');
-
-    Route::get('ajouter/annee-scolaire', [AjouterController::class, 'annee'])->name('ajouter.annee_scolaire');
-    Route::post('ajouter/annee-scolaire', [AjouterController::class, 'annee_store'])->name('ajouter.annee_scolaire.store');
+    route::get('/recherche', [RechercheController::class, 'index'])->name('recherche.results');
 
     Route::get('ajouter/institution', [AjouterController::class, 'institution'])->name('ajouter.institution');
     Route::post('ajouter/institution', [AjouterController::class, 'institution_store'])->name('ajouter.institution.store');
@@ -99,17 +99,23 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('evenements/{id}', [EvenementController::class, 'update']);
     Route::delete('/evenements/{id}', [EvenementController::class, 'destroy']);
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::delete('/message/{message}', [UserController::class, 'destroyMessage'])->name('message.destroy');
     Route::patch('/evenements/{id}/start', [EvenementController::class, 'startEvent']);
     Route::post('/evenement/{id}/store-notes-and-comments', [EvenementController::class, 'storeNotesAndComments'])->name('evenement.storeNotesAndComments');
     Route::get('/commencer-cours/{id}', [EvenementController::class, 'show']);
     Route::put('/terminer/{id}', [EvenementController::class, 'terminer'])->name('evenement.terminer');
     Route::get('/get-students/{eventId}', [EvenementController::class, 'getStudents']);
+    Route::get('/get-universite', [EvenementController::class, 'getUniversite']);
     Route::post('/save-attendance/{eventId}', [EvenementController::class, 'saveAttendance']);
     Route::get('/consulter-cours/{eventId}', [ConsulterController::class, 'index']);
     Route::get('/presence-pdf/{evenementId}', [PresencePDFController::class, 'generatePDF'])
         ->name('presence.pdf');
     Route::get('/presence/{evenementId}', [PresencePDFController::class, 'sansPDF'])
         ->name('sans.pdf');
+    Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
+
+    Route::get('configuration-globale', [EvenementController::class, 'creation'])->name('evenements.creation');
+    Route::post('evenement', [EvenementController::class, 'storage'])->name('evenements.storage');
 
 
 });
@@ -140,3 +146,8 @@ Route::get('/login', function () {
 Route::get('desactiver', function () {
     return view('desactive');
 })->name('desactiver');
+
+Route::get('ajouter/annee-scolaire', [AjouterController::class, 'annee'])->name('ajouter.annee_scolaire');
+Route::post('ajouter/annee-scolaire', [AjouterController::class, 'annee_store'])->name('ajouter.annee_scolaire.store');
+Route::post('ajouter/annee-scolaire2', [AjouterController::class, 'annee_store2'])->name('ajouter.annee_scolaire.store2');
+
