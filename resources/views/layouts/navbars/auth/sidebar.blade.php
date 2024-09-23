@@ -242,6 +242,8 @@
                     text: data.success,
                     confirmButtonText: 'OK'
                 });
+                // Vider le champ de texte après un envoi réussi
+                document.getElementById('message').value = '';
             }
         })
         .catch(error => {
@@ -253,5 +255,5 @@
             });
         });
     });
-    </script>
+</script>
 @endpush

@@ -12,8 +12,8 @@
                 <div class="card-header pb-0 text-left bg-transparent">
                   <h3 class="font-weight-bolder text-info text-gradient">Bienvenue</h3>
                   <br/>
-                  <p class="mb-0"><b>Gérez vos cours, suivez vos élèves, et simplifiez votre quotidien.</b></p>
-                  <p class="mb-0"><b>Optimisez chaque journée avec Carnet du Prof. Gratuit et sans engagement.</b></p>
+                  <p class="mb-0"><i><b>Gérez vos cours, suivez vos élèves, et simplifiez votre quotidien.</b></i></p>
+                  <p class="mb-0"><i><b>Optimisez chaque journée avec Carnet du Prof. Gratuit et sans engagement.</b></i></p>
 
                 </div>
                 <div class="card-body">

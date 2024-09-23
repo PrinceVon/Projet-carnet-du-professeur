@@ -52,7 +52,6 @@
             </main>
         @endif
 
-        @include('components.fixed-plugin')
     @endif
 
     @if (session('success'))

@@ -13,7 +13,7 @@
                     <div class="avatar avatar-xl position-relative">
                         <img src="../assets/img/robot_2.png" alt="..." class="w-100 border-radius-lg shadow-sm">
                         <a href="javascript:;" class="btn btn-sm btn-icon-only bg-gradient-light position-absolute bottom-0 end-0 mb-n2 me-n2">
-                            <i class="fa fa-pen top-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Image"></i>
+                            <i class="fa fa-pen top-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier la photo de profile"></i>
                         </a>
                     </div>
                 </div>
@@ -79,7 +79,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="role" class="form-control-label">{{ __('Role') }}</label>
+                                <label for="role" class="form-control-label">{{ __('Rôle') }}</label>
                                 <div class="@error('user.name')border border-danger rounded-3 @enderror">
                                     <input class="form-control" value="{{ ucfirst(auth()->user()->role) }}" type="text" placeholder="Role" id="user-role" name="role" readonly>
 
