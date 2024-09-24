@@ -6,7 +6,7 @@
                     <script>
                         document.write(new Date().getFullYear())
                     </script>
-                    , Fait  <i class="fa fa-heart"></i> par <b>New Brain Factory</b>
+                    , Développé  <i class="fa fa-heart"></i> par <b>NEW BRAIN FACTORY</b>
                 </div>
             </div>
             <div class="col-lg-6">
