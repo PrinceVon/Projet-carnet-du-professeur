@@ -53,6 +53,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('ajouter/salle', [AjouterController::class, 'salle'])->name('ajouter.salle');
     Route::post('ajouter/salle', [AjouterController::class, 'salle_store'])->name('ajouter.salle.store');
+    Route::post('/profile/update-photo', [InfoUserController::class, 'updatePhoto'])->name('profile.update-photo');
+
 
 	Route::get('billing', function () {
 		return view('billing');

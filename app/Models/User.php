@@ -25,6 +25,7 @@ class User extends Authenticatable
         'email',
         'password',
         'is_active',
+        'photo',
     ];
 
     /**
@@ -53,9 +54,6 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $appends = [
-        'profile_photo_url',
-    ];
 
     public function evenements()
     {

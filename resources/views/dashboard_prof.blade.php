@@ -50,8 +50,8 @@
                                             </div>
                                         </div>
                                         <div class="col-4 text-end">
-                                            <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                                                <i class="ni ni-paper-diploma text-lg opacity-10" aria-hidden="true"></i>
+                                            <div >
+                                                <img src="{{ asset(Auth::user()->photo) }}" alt="Photo de profil" class="w-25 border-radius-lg shadow-sm">
                                             </div>
                                         </div>
                                     </div>

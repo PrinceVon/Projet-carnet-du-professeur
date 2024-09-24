@@ -116,6 +116,7 @@
   @stack('ajouter_salle')
   @stack('ok')
 
+
 </body>
 
 </html>

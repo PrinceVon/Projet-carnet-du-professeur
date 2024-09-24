@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Evenement;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Storage;
+
 
 class InfoUserController extends Controller
 {
@@ -72,6 +73,39 @@ class InfoUserController extends Controller
             'user' => $user,
         ]);
     }
+
+    public function updatePhoto(Request $request)
+    {
+        $request->validate([
+            'photo' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $user = Auth::user();
+
+        if ($request->hasFile('photo')) {
+            // Supprimez l'ancienne photo si nécessaire
+            $oldPhotoPath = public_path($user->photo);
+            if (file_exists($oldPhotoPath)) {
+                unlink($oldPhotoPath);
+            }
+
+            // Récupérer le fichier photo
+            $photo = $request->file('photo');
+
+            // Créer un nom de fichier personnalisé
+            $filename = time() . '-' . $photo->getClientOriginalName();
+
+            // Déplacer le fichier vers le répertoire public/assets/img
+            $photo->move(public_path('assets/img'), $filename);
+
+            // Mettez à jour le chemin de l'image dans la base de données
+            $user->update(['photo' => 'assets/img/' . $filename]);
+        }
+
+        return back()->with('success', 'Photo mise à jour avec succès.');
+    }
+
+
 
 
 
