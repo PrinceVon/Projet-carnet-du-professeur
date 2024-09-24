@@ -8,7 +8,7 @@
               <script>
                 document.write(new Date().getFullYear())
               </script> Fait par
-              <a style="color: #252f40;" href="https://www.creative-tim.com" class="font-weight-bold ml-1" target="_blank">PrinceVon</a>
+              <a style="color: #252f40;" href="https://www.creative-tim.com" class="font-weight-bold ml-1" target="_blank">New Brain Factory</a>
             </p>
           </div>
         </div>

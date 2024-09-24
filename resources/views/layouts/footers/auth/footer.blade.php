@@ -6,7 +6,7 @@
                     <script>
                         document.write(new Date().getFullYear())
                     </script>
-                    , Fait  <i class="fa fa-heart"></i> par <b>PrinceVon</b>
+                    , Fait  <i class="fa fa-heart"></i> par <b>New Brain Factory</b>
                 </div>
             </div>
             <div class="col-lg-6">
