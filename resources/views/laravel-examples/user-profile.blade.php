@@ -20,7 +20,7 @@
                                 @csrf
                                 <div class="form-group">
                                     <label for="photo">Choisir une nouvelle photo :</label>
-                                    <input type="file" name="photo" id="photo" class="form-control" required>
+                                    <input type="file" name="photo" id="photo" class="form-control" accept=".png,.jpeg,.jpg,.svg,.gif,.webp,tiff,.bmp,.heic,.raw,.ico" required>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>

@@ -81,7 +81,6 @@
   <script src="../assets/js/plugins/smooth-scrollbar.min.js"></script>
   <script src="../assets/js/plugins/fullcalendar.min.js"></script>
   <script src="../assets/js/plugins/chartjs.min.js"></script>
-  @stack('rtl')
   @stack('dashboard_prof')
   @stack('start')
   @stack('presence')

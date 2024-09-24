@@ -151,7 +151,7 @@
                     var now = new Date(); // Obtenez l'heure actuelle
                     var heureDepart = new Date().toLocaleTimeString('fr-FR', { hour12: false });
 
-                    var heureArrivee = "{{ $evenement->heure_arrivee }}"; // Assurez-vous que cette valeur est correctement formatée
+                    var heureArrivee = "{{ $evenement->heure_arrivee }}";
                     var format = 'HH:mm:ss'; // Le format attendu pour les heures (24 heures)
                     var arrivee = moment(heureArrivee, format); // Utilisation de Moment.js pour le parsing
                     var depart = moment(heureDepart, format); // Utilisation de Moment.js pour le parsing
@@ -196,14 +196,14 @@
                         studentsList.append(
                             '<div class="form-group">' +
                             '<div class="form-check">' +
-                            '<input class="form-check-input" type="radio" name="status_' + student.id + '" id="present_' + student.id + '" value="Présent(e)">' +
+                            '<input class="form-check-input" type="radio" name="status_' + student.id + '" id="present_' + student.id + '" value="Présent(e)" required>' +
                             '<label class="form-check-label" for="present_' + student.id + '">' +
                             '<strong>' + student.nom + ' ' + student.prenom + '</strong>' +
                             ' - Présent' +
                             '</label>' +
                             '</div>' +
                             '<div class="form-check">' +
-                            '<input class="form-check-input" type="radio" name="status_' + student.id + '" id="absent_' + student.id + '" value="Absent(e)">' +
+                            '<input class="form-check-input" type="radio" name="status_' + student.id + '" id="absent_' + student.id + '" value="Absent(e)" required>' +
                             '<label class="form-check-label" for="absent_' + student.id + '">' +
                             '<strong>' + student.nom + ' ' + student.prenom + '</strong>' +
                             ' - Absent' +
@@ -249,7 +249,12 @@
                     $('#appelModal').modal('hide');
                 },
                 error: function(xhr) {
-                    alert('Une erreur est survenue : ' + xhr.responseText);
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Echec !',
+                        text: 'Veuillez à choisir avant la soumission.',
+                        confirmButtonText: 'OK'
+                    });
                     console.log(xhr.responseText);
                 }
             });
